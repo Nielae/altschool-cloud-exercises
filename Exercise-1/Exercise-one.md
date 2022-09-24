@@ -10,6 +10,6 @@ The steps taken to achieve this are as follows:
     <li> The screenshot of "ifconfig" is this: </li>
 </ol>
 
-![Ifcofig evidence](../images/Ifconfig.png "Ifconfig screenshot") 
+![Ifcofig evidence](./image1/Ifconfig.png "Ifconfig screenshot") 
 
-<p> And this is the end of exercise one. </p>
+<p> And this is the end of exercise one. THE END. </p>
