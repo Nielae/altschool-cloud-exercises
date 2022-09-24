@@ -16,7 +16,7 @@ STEPS:
 
 ![etc/apt/sources.list](../Images/phpsourcelist.png "/etc/passwd screenshot") 
 
-<ul> <li> /php -v </li> </ul>
+<ul> <li> /php -v </li> </ul> 
 
 ![php -v](../Images/php-v.png "/etc/group screenshot") 
 
