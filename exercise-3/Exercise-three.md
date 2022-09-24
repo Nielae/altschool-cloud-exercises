@@ -4,7 +4,7 @@
 STEPS:
     <ol>
         <li> Created users "adminuser", "supportuser", "enguser" using the command "useradd -m username"     </li>
-        <li> Created groups "admin" "support" "engineering" using the command "groupadd gropname"     </li>
+        <li> Created groups "admin" "support" "engineering" using the command "groupadd groupname"     </li>
         <li> added each user to their corresponding groups using the command "usermod -G groupname username"  </li>    
         <li>Generated key for the "adminn group" with the command "SSH -key gen"    </li>
     </ol>
