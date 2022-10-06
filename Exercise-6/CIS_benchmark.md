@@ -1,5 +1,5 @@
 ## BEEFING UP MY SECURITY WITH CIS BENCHMARK
-### These are the steps taken to strenghten my security 
+### These are the steps taken to strengthen my security 
 ##### Honestly, i can barely remember all the steps i took to do this. I need to do better with my documentation. 
  <br>
 STEPS:
