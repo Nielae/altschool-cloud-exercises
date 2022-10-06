@@ -4,7 +4,7 @@
  <br>
 STEPS:
     <ol>
-        <li> I googled "cis benchmark" as i do not know the correct web address, the resolt came up and i chose the first link with "www.cissecurity.org"     </li>
+        <li> I googled "cis benchmark" as i do not know the correct web address, the result came up and i chose the first link with "www.cissecurity.org"     </li>
         <li> Scrolled down the page briefly till i saw the different software tabs, clicked on "operating software", this brought out other tabs and i chose linux. This prompted the system to show me only linux OS. I chose ubuntu linux and clicked on the "Download CIS benchmark" button.     </li>
         <li> I was directed to another page where i had to fill a form and click on "Get free benchmarks now" </li> 
         <li> An email was sent to the mail i had put in, giving me access to download the pdf file. I downloaded the file for ubuntu 20.04  </li>  
