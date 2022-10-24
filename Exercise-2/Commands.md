@@ -62,7 +62,7 @@ The commands are as follows:
 <li> <b>rm</b>
 <p> This is to used to delete a file </p> </li>
 
-![mvfile](../images/e2rm.png "mvfile")
+![mvfile](../images/e2rm.png "rmfile")
 </ol>
 
 
