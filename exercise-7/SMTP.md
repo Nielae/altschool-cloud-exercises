@@ -1,10 +1,10 @@
-## SMTP CRIPT, CRONJOB AND SAMPLE EMAIL
+## SMTP SCRIPT, CRONJOB AND SAMPLE EMAIL
 ### These are the steps ............. Not today, today I just can't. 
  <br>
 STEPS:
     <ol>
-        <li> I guess i do not have much of a choice     </li>
-        <li> Well, I cannot remember the steps i took.      </li>
+        <li> I guess I do not have much of a choice     </li>
+        <li> Well, I cannot remember the steps I took.      </li>
         <li> Pheeeewww  </li>    
         <li>Hopefully, I will get to edit this steps with the real steps.    </li>
     </ol>
@@ -15,7 +15,7 @@ STEPS:
 
 ![SMTP script](../Images/SMTPscript.png "SMTP script") 
 
-<ul> <li> /etc/group </li> </ul>
+<ul> <li> Cronjob </li> </ul>
 
 ![SMTP cronjob](../Images/SMTPcronjob.png "SMTP cronjob") 
 
@@ -24,4 +24,4 @@ STEPS:
 ![Sample Email](../Images/SMTPMail.png "Sample Email") 
 
 
-<p> That is the end of exercise three. THE END.
+<p> That is the end of exercise seven. THE END.
