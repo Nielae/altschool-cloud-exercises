@@ -1,4 +1,4 @@
-ul> <li>Mini Project Apache output </li> </ul>
+<ul> <li>Mini Project Apache output </li> </ul>
 
 ![ansible cat](../Images/miniproject.png "ansible cat")
 
