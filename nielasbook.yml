@@ -1,0 +1,212 @@
+---
+# install Apache2 using Ansible
+- name: Setup Apache server on myservers
+  hosts: all
+  become: True
+  vars:
+    apache2_version: 2.4.41
+  tasks:
+    # first task --- instal apache2
+    - name: Install the latest version of apache2
+      become_method: sudo
+      command: apt install apache2 apache2-utils -y
+
+
+    #second task --- start the service
+    - name: Start apache2
+      service:
+        name: apache2
+        enabled: yes
+        state: started
+
+    # third task --- confirm apache2 version
+    - name: Get apache2 installed version
+      command: apache2 -v
+      register: apache2_version
+    # print the current version of apache2 on screen
+    - name: print apache2 version
+      debug:
+        msg: "The current version of apache2 is {{apache2_version}}"
+
+    # forth task --- confirm status
+    - name: Get the status of apache2 service
+      command: systemctl status apache2
+
+    # fifth task --- set server to Africa/Lagos timezone
+    - name: Set timezone to Africa/Lagos
+      command: timedatectl set-timezone Africa/Lagos
+
+    # sixth task --- confirm time zone has been changed correctly
+    - name: Get status of timezone
+      command: timedatectl
+
+    #Install php7.4
+    - name: Installation install software-properties-common
+      apt: name=software-properties-common
+
+    - name: "Repo PHP 7.4"
+      apt: name=php7.4 state=present
+
+    - name: install lamp stack
+      apt:
+        pkg:
+          - php7.4-mysql
+          - php7.4-curl
+          - php7.4-json
+          - php7.4-cgi
+          - php7.4-xsl
+          - php7.4-cgi
+          - php7.4-cli
+          - php7.4-gd
+          - php7.4-mbstring
+          - php7.4-zip
+          - php7.4-xmlrpc
+          - php7.4-soap
+          - php7.4-intl
+          - libapache2-mod-php
+        state: present
+        update_cache: yes
+     
+ 
+- name: setup Mysql with nieladb db and remote login
+  become: True
+  hosts: DBservers
+  tasks:  
+    
+    - name: Installing Mysql  and dependencies
+      package:
+       name: "{{item}}"
+       state: present
+       update_cache: yes
+      loop:
+       - mysql-server
+       - mysql-client 
+       - python3-mysqldb
+       - libmysqlclient-dev
+      become: yes
+
+    - name: start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: creating mysql user (niela)
+      mysql_user:
+        name: "niela"
+        password: "niela"
+        priv: '*.*:ALL'
+        host: '%'
+        state: present
+    
+    - name: creating nieladb
+      mysql_db:
+        name: "niela"
+        state: present
+    
+    - name: Enable remote login to mysql
+      lineinfile:
+         path: /etc/mysql/mysql.conf.d/mysqld.cnf
+         regexp: '^bind-address'
+         line: 'bind-address = 0.0.0.0'
+         backup: yes
+      notify:
+         - Restart mysql
+  handlers:
+    - name: Restart mysql
+      service:
+        name: mysql
+        state: restarted 
+
+    
+    - name: download composer installer
+      get_url:
+          url: https://getcomposer.org/installer
+          dest: /tmp/composer
+ 
+    - name: install composer
+      shell: php /tmp/composer --install-dir=/usr/local/bin
+      become: yes
+    
+    - name: rename composer executable
+      shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+      become: yes
+
+    - name: set permissions for composer file
+      ansible.builtin.file:
+        path: /usr/local/bin/composer
+        state: file
+        mode: a+x
+        
+
+    - name: clone laravel codebase
+      git:
+        repo: https://github.com/f1amy/laravel-realworld-example-app.git
+        dest: /var/www/html/myapp
+      become: yes
+         
+
+    - name: take ownership of myapp folder
+      file:
+        path: /var/www/html/myapp
+        owner: "{{ ansible_effective_user_id }}"
+        group: "{{ ansible_effective_group_id }}"
+      become: yes
+    
+    - name: set permissions for Laravel storage folder
+      file:
+        path: /var/www/html/myapp/storage
+        state: directory
+        recurse: yes
+        mode: '0755'
+      become: yes
+    
+
+    - name: copy env file
+      copy:
+        src: /var/www/html/myapp/.env.example
+        remote_src: yes
+        dest: /var/www/html/myapp/.env
+        owner: "{{ ansible_effective_user_id }}"
+        group: "{{ ansible_effective_group_id }}"
+        mode: '0644'
+        
+
+        
+    - name: copy apache config
+      copy:
+        src: stubs/myapp.conf
+        dest: /etc/apache2/sites-available/myapp.conf
+        owner: "{{ ansible_effective_user_id }}"
+        group: "{{ ansible_effective_group_id }}"
+        mode: '0644'
+      
+
+    - name: set server name
+      replace:
+        path: /etc/apache2/sites-available/myapp.conf
+        regexp: '$SERVER_NAME'
+        replace: '{{ ansible_host }}'
+      become: yes
+
+
+    - name: enable the new config
+      shell: |
+        a2ensite myapp.conf
+        a2dissite 000-default.conf
+        a2enmod rewrite
+        service apache2 restart
+      become: yes      
+    
+
+    - name: setup laravel
+      shell: |
+        cd /var/www/html/myapp
+        php artisan key: generate
+      become: yes
+
+    #Copy index.php file apache web hosting path
+    #- name: copy file from localhost(this VM) to remote server
+      #copy:
+      #  src: /home/vagrant/ansible/index.php
+       # dest: /var/www/html/index.php
