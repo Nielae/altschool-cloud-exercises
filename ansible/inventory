@@ -1,0 +1,21 @@
+#[webserver]
+#vagrant@192.168.56.20
+
+
+#[EC2webservers]
+#54.152.119.157 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=home/vagrant/.ssh/nielaexamtukey.pem
+
+
+#[ec2apache]
+#54.152.119.157 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=home/vagrant/.ssh/nielaexamtukey.pem
+
+
+#[localhost]
+#12.0.0.1 nsible_ssh_user=ubuntu ansible_ssh_private_key_file=home/vagrant/.ssh/id_rsa.pub
+
+
+#[php]
+#54.152.119.157 ansible_ssh_user=ubuntu
+
+
+#54.152.119.157 ansible_ssh_user=ubuntu
