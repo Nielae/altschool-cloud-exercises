@@ -238,7 +238,7 @@
       shell: cd /var/www/html/nielapp/ && sudo a2dissite 000-default && cd
 
     - name: Enabling new Configuration
-      shell: cd /var/www/html/nielapp/ && sudo a2ensite shoplikeaboss247.conf && cd
+      shell: cd /var/www/html/nielapp/ && sudo a2ensite nielapp.conf && cd
 
       notify:
         - restart apache2
