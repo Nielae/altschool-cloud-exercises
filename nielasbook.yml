@@ -6,6 +6,20 @@
   vars:
     apache2_version: 2.4.41
   tasks:
+
+
+    #istalling net tools
+    - name: install net-tools
+      become_method: sudo
+      command: apt install net-tools
+
+
+    #upadte and upgrade 
+    - name: Update and Upgrade
+      become_method: sudo
+      command: apt update && apt upgrade -y
+
+
     # first task --- instal apache2
     - name: Install the latest version of apache2
       become_method: sudo
@@ -23,16 +37,19 @@
     - name: Get apache2 installed version
       command: apache2 -v
       register: apache2_version
+
     # print the current version of apache2 on screen
     - name: print apache2 version
       debug:
         msg: "The current version of apache2 is {{apache2_version}}"
 
-    # forth task --- confirm status
-    - name: Get the status of apache2 service
-      command: systemctl status apache2
 
-    # fifth task --- set server to Africa/Lagos timezone
+ 
+
+
+
+
+   # fifth task --- set server to Africa/Lagos timezone
     - name: Set timezone to Africa/Lagos
       command: timedatectl set-timezone Africa/Lagos
 
@@ -68,57 +85,7 @@
         update_cache: yes
      
  
-- name: setup Mysql with nieladb db and remote login
-  become: True
-  hosts: DBservers
-  tasks:  
-    
-    - name: Installing Mysql  and dependencies
-      package:
-       name: "{{item}}"
-       state: present
-       update_cache: yes
-      loop:
-       - mysql-server
-       - mysql-client 
-       - python3-mysqldb
-       - libmysqlclient-dev
-      become: yes
-
-    - name: start and enable mysql service
-      service:
-        name: mysql
-        state: started
-        enabled: yes
-
-    - name: creating mysql user (niela)
-      mysql_user:
-        name: "niela"
-        password: "niela"
-        priv: '*.*:ALL'
-        host: '%'
-        state: present
-    
-    - name: creating nieladb
-      mysql_db:
-        name: "niela"
-        state: present
-    
-    - name: Enable remote login to mysql
-      lineinfile:
-         path: /etc/mysql/mysql.conf.d/mysqld.cnf
-         regexp: '^bind-address'
-         line: 'bind-address = 0.0.0.0'
-         backup: yes
-      notify:
-         - Restart mysql
-  handlers:
-    - name: Restart mysql
-      service:
-        name: mysql
-        state: restarted 
-
-    
+   
     - name: download composer installer
       get_url:
           url: https://getcomposer.org/installer
@@ -139,23 +106,23 @@
         mode: a+x
         
 
-    - name: clone laravel codebase
-      git:
-        repo: https://github.com/f1amy/laravel-realworld-example-app.git
-        dest: /var/www/html/myapp
-      become: yes
+#    - name: clone laravel codebase
+ #     git:
+  #      repo: https://github.com/f1amy/laravel-realworld-example-app.git
+   #     dest: /var/www/html/nielapp
+    #  become: yes
          
 
-    - name: take ownership of myapp folder
+    - name: take ownership of nielapp folder
       file:
-        path: /var/www/html/myapp
+        path: /var/www/html/nielapp
         owner: "{{ ansible_effective_user_id }}"
         group: "{{ ansible_effective_group_id }}"
       become: yes
     
     - name: set permissions for Laravel storage folder
       file:
-        path: /var/www/html/myapp/storage
+        path: /var/www/html/nielapp/storage
         state: directory
         recurse: yes
         mode: '0755'
@@ -164,9 +131,9 @@
 
     - name: copy env file
       copy:
-        src: /var/www/html/myapp/.env.example
+        src: /var/www/html/nielapp/.env.example
         remote_src: yes
-        dest: /var/www/html/myapp/.env
+        dest: /var/www/html/nielapp/.env
         owner: "{{ ansible_effective_user_id }}"
         group: "{{ ansible_effective_group_id }}"
         mode: '0644'
@@ -175,24 +142,24 @@
         
     - name: copy apache config
       copy:
-        src: stubs/myapp.conf
-        dest: /etc/apache2/sites-available/myapp.conf
+        src: stubs/nielapp.conf
+        dest: /etc/apache2/sites-available/nielapp.conf
         owner: "{{ ansible_effective_user_id }}"
         group: "{{ ansible_effective_group_id }}"
         mode: '0644'
       
 
-    - name: set server name
-      replace:
-        path: /etc/apache2/sites-available/myapp.conf
-        regexp: '$SERVER_NAME'
-        replace: '{{ ansible_host }}'
-      become: yes
+    #- name: set server name
+    #  replace:
+     #   path: /etc/apache2/sites-available/nielapp.conf
+      #  regexp: 'nielaudunwa.ml'
+      #  replace: 'nielaudunwa.ml'
+      #become: yes
 
 
     - name: enable the new config
       shell: |
-        a2ensite myapp.conf
+        a2ensite nielapp.conf
         a2dissite 000-default.conf
         a2enmod rewrite
         service apache2 restart
@@ -201,12 +168,123 @@
 
     - name: setup laravel
       shell: |
-        cd /var/www/html/myapp
+        cd /var/www/html/nielapp
+        '.:/usr/share/php'
         php artisan key: generate
       become: yes
 
-    #Copy index.php file apache web hosting path
-    #- name: copy file from localhost(this VM) to remote server
-      #copy:
-      #  src: /home/vagrant/ansible/index.php
-       # dest: /var/www/html/index.php
+
+ #   - name: setup Mysql with nieladb db and remote login
+#  become: True
+  #hosts: DBservers
+  #tasks:
+
+    - name: Installing Mysql  and dependencies
+      package:
+       name: "{{item}}"
+       state: present
+       update_cache: yes
+      loop:
+       - mysql-server
+       - mysql-client
+       - python3-mysqldb
+       - libmysqlclient-dev
+      become: yes
+
+    - name: start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: creating mysql user (niela)
+      mysql_user:
+        name: "niela"
+        password: "niela"
+        priv: '*.*:ALL'
+        host: '%'
+        state: present
+
+    - name: creating nieladb
+      mysql_db:
+        name: "niela"
+        state: present
+
+    - name: Enable remote login to mysql
+      lineinfile:
+         path: /etc/mysql/mysql.conf.d/mysqld.cnf
+         regexp: '^bind-address'
+         line: 'bind-address = 0.0.0.0'
+         backup: yes
+
+    - name: Migrating Database
+      shell: cd /var/www/html/nielapp/ && php artisan migrate --seed --force && cd
+
+
+    - name: restart apache2 
+      shell: |
+        service apache2 restart
+      become: yes      
+
+
+    - name: Copy Configuration file
+      ansible.builtin.copy:
+        src: stubs/nielapp.conf
+        dest: /etc/apache2/sites-available/nielapp.conf
+        remote_src: no
+
+
+
+    - name: Enable Apache 2 Mod Rewrite
+      shell: sudo a2enmod rewrite
+
+     
+    - name: restart apache2
+      shell: |
+        service apache2 restart
+      become: yes
+
+
+    - name: Creating File
+      shell: sudo touch /var/www/html/nielapp/.htaccess
+
+    - name: Copy htaccess file
+      ansible.builtin.copy:
+        src: /home/vagrant/ansible/.htaccess
+        dest: /var/www/html/nielapp/.htaccess
+        remote_src: no
+
+
+
+    - name: Disabling default Configuration
+      shell: cd /var/www/html/nielapp/ && sudo a2dissite 000-default && cd
+
+
+    - name: Disabling myapp Configuration
+      shell: cd /var/www/html/myapp/ && sudo a2dissite myapp.conf && cd
+
+
+    - name: Enabling new Configuration
+      shell: cd /var/www/html/nielapp/ && sudo a2ensite nielapp.conf && cd
+
+
+
+    - name: Disabling default Configuration
+      shell: cd /etc/apache2/sites-available && sudo a2dissite 000-default && cd
+
+  
+    - name: Disabling default Configuration
+      shell: cd /etc/apache2/sites-available && sudo a2dissite myapp.conf && cd
+
+
+    - name: Enabling new Configuration
+      shell: cd /etc/apache2/sites-available  && sudo a2ensite nielapp.conf && cd
+
+
+
+    - name: restart apache2
+      shell: |
+        service apache2 restart
+      become: yes
+
+
