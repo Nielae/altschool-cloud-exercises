@@ -25,7 +25,7 @@
 
     - name: Copy htaccess new file to ensure mod rewrite
       ansible.builtin.copy:
-        src: /home/vagrant/ansible/.htaccess2
+        src: /home/vagrant/ansible/.htaccess
         dest: /var/www/html/nielapp/.htaccess
         remote_src: no
 
